@@ -25,4 +25,5 @@ jobs:
       with:
         github_token: ${{ secrets.RICK }}
         publish_dir: ./_site  # Directorio donde se encuentra el sitio generado
+        
 
