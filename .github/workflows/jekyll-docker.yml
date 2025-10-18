@@ -1,30 +1,33 @@
-name: Jekyll site CI
+name: Deploy Vue App to GitHub Pages
 
 on:
   push:
     branches: [ "webApi" ]
-  pull_request:
-    branches: [ "webApi" ]
 
 permissions:
-  contents: write  # Necesario para que GITHUB_TOKEN pueda hacer push
+  contents: write
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-      - name: Build the site in the jekyll/builder container
-        run: |
-          docker run \
-          -v ${{ github.workspace }}:/srv/jekyll \
-          -v ${{ github.workspace }}/_site:/srv/jekyll/_site \
-          jekyll/builder:latest /bin/bash -c "chmod -R 777 /srv/jekyll && jekyll build --future"
+      - name: Install Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 14
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build the app
+        run: npm run build
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}  # Cambiado de RICK a token automático
-          publish_dir: ./_site  # Asegúrate de que aquí esté el sitio generado
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
